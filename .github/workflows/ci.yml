@@ -15,7 +15,7 @@ on:
     branches: [ main ]
 
 env:
-  APP_NAME: multilang-java-maven
+  APP_NAME: ${{ github.event.repository.name }}
   DOCKER_IMAGE: jaykumark7/multilang-java-maven
   DEPLOY_ENV: dev
   DEPLOY_NAMESPACE: dev
@@ -73,6 +73,12 @@ jobs:
       #     args: >
       #       -Dsonar.projectKey=${{ env.APP_NAME }}
       #       -Dsonar.java.binaries=target/classes -Dsonar.sources=src/main/java
+      
+      - name: Upload WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-war
+          path: target/*.war
 
   # ─────────────────────────────────────────────────────────
   # CD — Docker Build + Push + GitOps Update (main only)
@@ -86,6 +92,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download WAR
+        uses: actions/download-artifact@v4
+        with:
+          name: app-war
+          path: target
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -95,7 +107,7 @@ jobs:
       - name: Build & Push Docker Image
         run: |
           IMAGE_TAG=${{ env.DOCKER_IMAGE }}:1.0.${{ github.run_number }}
-          docker build -t $IMAGE_TAG -t ${{ env.DOCKER_IMAGE }}:latest .
+          docker build --build-arg CONTEXT_PATH=${{ env.APP_NAME }}-${{ env.DEPLOY_NAMESPACE }} -t $IMAGE_TAG -t ${{ env.DOCKER_IMAGE }}:latest .
           docker push $IMAGE_TAG
           docker push ${{ env.DOCKER_IMAGE }}:latest
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
