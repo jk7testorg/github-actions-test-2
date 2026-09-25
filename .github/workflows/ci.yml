@@ -53,6 +53,8 @@ jobs:
 
       # AI-decided: build
       - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.JK7_PACKAGES_TOKEN }}
         run: |
           mvn clean package -DskipTests -B
 
