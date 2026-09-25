@@ -125,10 +125,10 @@ jobs:
           cp ../manifest-templates/ingress.yaml     apps/${{ env.APP_NAME }}/${{ env.DEPLOY_ENV }}/ || true
           for f in apps/${{ env.APP_NAME }}/${{ env.DEPLOY_ENV }}/*.yaml argocd/${{ env.APP_NAME }}-${{ env.DEPLOY_ENV }}.yaml; do
             [ -f "$f" ] || continue
-            sed -i "s|\\${APP_NAME}|${{ env.APP_NAME }}|g"          "$f"
-            sed -i "s|\\\${DOCKER_IMAGE}|${{ env.IMAGE_TAG }}|g"     "$f"
-            sed -i "s|\\${APP_PORT}|${{ env.APP_PORT }}|g"          "$f"
-            sed -i "s|\\${NAMESPACE}|${{ env.DEPLOY_NAMESPACE }}|g" "$f"
+            sed -i "s|\${APP_NAME}|${{ env.APP_NAME }}|g"          "$f"
+            sed -i "s|\${DOCKER_IMAGE}|${{ env.IMAGE_TAG }}|g"     "$f"
+            sed -i "s|\${APP_PORT}|${{ env.APP_PORT }}|g"          "$f"
+            sed -i "s|\${NAMESPACE}|${{ env.DEPLOY_NAMESPACE }}|g" "$f"
           done
           git config user.email "gha@local"
           git config user.name "GitHub Actions"
